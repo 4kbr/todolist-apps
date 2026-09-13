@@ -30,8 +30,8 @@ dockerdev-psql:
 ## Diteruskan ke backend -----------------------------------------------------
 .PHONY: dev run build test test-integration lint \
         migrate-up migrate-down migrate-reset migrate-status migrate-create 
-dev dev-worker run run-worker build test test-integration lint \
-db-up db-down db-reset db-status db-create tools docs-serve:
+dev run build test test-integration lint \
+migrate-up migrate-down migrate-reset migrate-status migrate-create:
 	$(MAKE) -C $(BACKEND) $@ $(if $(name),name=$(name))
 
 ## Bootstrap -----------------------------------------------------------------
