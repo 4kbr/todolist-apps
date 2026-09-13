@@ -1,0 +1,1 @@
+belum ada apa-apa

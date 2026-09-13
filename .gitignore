@@ -1,0 +1,6 @@
+# ini khusus root, tiap app punya gitignore masing-masing yang sesuai kebutuhannya
+
+temp/
+
+# konfigurasi container lokal - lihat .env.docker.example
+.env.docker
