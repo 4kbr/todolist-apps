@@ -1,42 +1,46 @@
-# Standup Bot
+# Todolist
 
-Standup harian yang menulis dirinya sendiri. Memantau aktivitas GitHub tim,
-meringkasnya dengan LLM, mengirimkannya ke channel chat pada jadwal yang
-ditentukan.
+Todolist multi-user. Backend Go + Chi berbentuk modular monolith, CMS menyusul
+setelah API stabil.
+
+Project ini dipakai untuk belajar membangun backend Go yang benar — lihat
+[`docs/PRD.md`](docs/PRD.md) untuk alasan dan batasannya.
 
 ## Struktur
 
 ```
-docs/PRD.md          apa yang dibangun dan kenapa
-apps/backend/        Go, modular monolith
-apps/frontend/       CMS - belum dikerjakan
+docs/PRD.md            apa yang dibangun dan kenapa
+apps/go-chi-api/       Go + Chi, modular monolith
+apps/cms/              CMS - belum dikerjakan, menunggu API stabil
 ```
 
 ## Menjalankan
 
-**Prasyarat:** Go 1.25+, Docker, `make`.
+**Prasyarat:** Go 1.26+, Docker, `make`.
 
 ```bash
-make tools   # air, goose, golangci-lint
+make tools   # air, goose, sqlc, golangci-lint
 make setup   # salin .env, nyalakan Postgres, jalankan migrasi
 make dev     # http://localhost:8080, dengan live reload
 ```
 
 `curl localhost:8080/healthz` harus menjawab `{"status":"ok"}`.
 
-Semua target dijalankan dari root — tidak perlu `cd apps/backend`. Daftar lengkapnya ada
-di [`apps/backend/docs/HANDS-OFF.md`](apps/backend/docs/HANDS-OFF.md).
+Semua target dijalankan dari root — tidak perlu `cd apps/go-chi-api`. Daftar
+lengkapnya ada di
+[`apps/go-chi-api/docs/HANDS-OFF.md`](apps/go-chi-api/docs/HANDS-OFF.md).
 
 ## Mulai dari mana
 
-1. Baca [`docs/PRD.md`](docs/PRD.md) — ruang lingkup dan non-goal
-2. Baca [`apps/backend/docs/ARCHITECTURE.md`](apps/backend/docs/ARCHITECTURE.md) — bentuk kodenya
-3. Mulai dari [`apps/backend/docs/tasks/`](apps/backend/docs/tasks/README.md)
+1. [`docs/PRD.md`](docs/PRD.md) — ruang lingkup dan non-goal
+2. [`apps/go-chi-api/docs/ARCHITECTURE.md`](apps/go-chi-api/docs/ARCHITECTURE.md) — bentuk kodenya
+3. [`apps/go-chi-api/docs/DECISIONS.md`](apps/go-chi-api/docs/DECISIONS.md) — kenapa bentuknya begitu
+4. [`apps/go-chi-api/docs/tasks/`](apps/go-chi-api/docs/tasks/README.md) — urutan pengerjaan
 
 ## Status
 
-Fondasi selesai (task 00): konfigurasi, logging, pool Postgres, helper HTTP, dua entry
-point dengan graceful shutdown, dan CI. Logika bisnis belum ada.
+Perencanaan selesai. Arsitektur, skema, dan sepuluh task sudah tertulis.
+Kode belum ada — mulai dari task `00-foundation.md`.
 
-Setiap fungsi yang belum diimplementasikan `panic` dengan pesan yang menunjuk ke file
-task yang menjelaskannya.
+Setiap fungsi yang belum diimplementasikan `panic` dengan pesan yang menunjuk ke
+file task yang menjelaskannya.

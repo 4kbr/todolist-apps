@@ -1,5 +1,5 @@
-# Makefile root. Target aplikasi diteruskan ke apps/backend supaya tidak perlu
-# cd ke sana; `cd apps/backend && make dev` tetap bekerja sama persis.
+# Makefile root. Target aplikasi diteruskan ke apps/go-chi-api supaya tidak perlu
+# cd ke sana; `cd apps/go-chi-api && make dev` tetap bekerja sama persis.
 #
 # Target container berprefix dockerdev- supaya tidak tertukar dengan db-*.
 # Keduanya mengurus hal berbeda: dockerdev-up menyalakan container,
@@ -7,7 +7,7 @@
 
 .PHONY: dockerdev-up dockerdev-down dockerdev-logs dockerdev-ps dockerdev-psql
 
-BACKEND := apps/backend
+BACKEND := apps/go-chi-api
 COMPOSE := docker compose --env-file .env.docker -f docker-compose.dev.yml
 
 ## Container pengembangan ----------------------------------------------------
