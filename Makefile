@@ -5,33 +5,38 @@
 # Keduanya mengurus hal berbeda: dockerdev-up menyalakan container,
 # db-up menjalankan migrasi di dalamnya.
 
-.PHONY: dockerdev-up dockerdev-down dockerdev-logs dockerdev-ps dockerdev-psql
 
 BACKEND := apps/go-chi-api
 COMPOSE := docker compose --env-file .env.docker -f docker-compose.dev.yml
 
 ## Container pengembangan ----------------------------------------------------
-
+.PHONY: dockerdev-up
 dockerdev-up:
 	$(COMPOSE) up -d
 
+.PHONY: dockerdev-down
 dockerdev-down:
 	$(COMPOSE) down
 
+.PHONY: dockerdev-logs
 dockerdev-logs:
 	$(COMPOSE) logs -f
 
+.PHONY: dockerdev-ps
 dockerdev-ps:
 	$(COMPOSE) ps
 
+.PHONY: dockerdev-psql
 dockerdev-psql:
 	$(COMPOSE) exec postgres psql -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-todolist_dev}
 
 ## Diteruskan ke backend -----------------------------------------------------
 .PHONY: dev run build test test-integration lint \
-        migrate-up migrate-down migrate-reset migrate-status migrate-create 
+        migrate-up migrate-down migrate-reset migrate-status migrate-create \
+				openapi-lint openapi-bundle openapi-bundle-check
 dev run build test test-integration lint \
-migrate-up migrate-down migrate-reset migrate-status migrate-create:
+migrate-up migrate-down migrate-reset migrate-status migrate-create \
+openapi-lint openapi-bundle openapi-bundle-check:
 	$(MAKE) -C $(BACKEND) $@ $(if $(name),name=$(name))
 
 ## Bootstrap -----------------------------------------------------------------

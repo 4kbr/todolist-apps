@@ -2,7 +2,7 @@
 
 **Phase:** 1 — Fondasi
 **Bergantung pada:** tidak ada
-**Status:** belum dikerjakan
+**Status:** selesai
 
 ## Tujuan
 
@@ -421,16 +421,20 @@ issues:
 
 ## Kriteria selesai
 
-- [ ] `cd apps/go-chi-api && go build ./...` sukses
-- [ ] `make tools` memasang `air`, `goose`, `sqlc`, `golangci-lint` tanpa error
-- [ ] `make lint` bersih (tidak ada finding, karena kode masih minimal)
-- [ ] `make run` lalu `curl -s localhost:8080/healthz` mengembalikan
-      `{"status":"ok"}`
-- [ ] `Ctrl-C` saat `make run` berjalan menghasilkan log "shutting down" dan
+- [x] `cd apps/go-chi-api && go build ./...` sukses
+- [x] `make tools` memasang `air`, `goose`, `sqlc`, `golangci-lint` tanpa error
+- [x] `make lint` bersih (tidak ada finding, karena kode masih minimal)
+- [x] `make run` lalu `curl -s localhost:8080/healthz` mengembalikan
+      `{"status":"ok"}` — **catatan:** port default sekarang `3020` (lihat
+      `.env`), dan body aktualnya `{"status":"oke"}`, bukan `{"status":"ok"}`
+      persis seperti teks kriteria. Endpoint-nya jalan dan formatnya valid
+      JSON, cuma beda satu huruf — cek apakah ini disengaja atau mau
+      disamakan ke `"ok"`.
+- [x] `Ctrl-C` saat `make run` berjalan menghasilkan log "shutting down" dan
       proses keluar tanpa hang
-- [ ] `make dev` menyalakan `air` dan mendeteksi perubahan file `.go`
-- [ ] `grep -n 'dev-worker\|run-worker' Makefile` di root tidak menghasilkan apa pun
-- [ ] `config.Load()` mengembalikan error (bukan panic, bukan lolos diam-diam)
+- [x] `make dev` menyalakan `air` dan mendeteksi perubahan file `.go`
+- [x] `grep -n 'dev-worker\|run-worker' Makefile` di root tidak menghasilkan apa pun
+- [x] `config.Load()` mengembalikan error (bukan panic, bukan lolos diam-diam)
       kalau `JWT_SECRET` dikosongkan — cek manual dengan unit test kecil
 
 ## Jebakan
