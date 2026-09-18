@@ -13,6 +13,7 @@ jalan.
 | --- | --- |
 | Dokumen arsitektur | selesai — `docs/ARCHITECTURE.md` |
 | Keputusan teknis | selesai — `docs/DECISIONS.md`, ADR-001 s.d. ADR-013 |
+| Skema database | selesai (dokumen) — `docs/DB-SCHEMA.md`, ERD + index + cascade; migrasi sungguhan masih task 01 |
 | Aturan kode | selesai — `AGENTS.md` |
 | Daftar task | selesai — `docs/tasks/`, 10 task dalam 5 phase |
 | Kontrak OpenAPI | kosong — diisi task 03 |

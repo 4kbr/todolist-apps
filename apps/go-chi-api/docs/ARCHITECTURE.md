@@ -198,6 +198,9 @@ unique `(user_id, name)`
 Index: `sessions(user_id)`, `todos(user_id, status, due_at)`,
 `todos(list_id, created_at desc, id desc)`.
 
+Skema lengkap — ERD, tipe tiap kolom, nullability, constraint, dan alasan tiap
+index ada — di [`DB-SCHEMA.md`](DB-SCHEMA.md).
+
 ## Autentikasi
 
 Access token JWT umur pendek + refresh token opaque yang disimpan di database.
