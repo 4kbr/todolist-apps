@@ -52,3 +52,9 @@ setup:
 	@$(MAKE) db-up || echo "  (belum ada migrasi - itu task 01)"
 	@echo
 	@echo "Siap. Jalankan: make dev"
+
+
+# Menjalankan backend dari roo
+.PHONY: backend
+backend:
+	$(MAKE) -C $(BACKEND) dev
