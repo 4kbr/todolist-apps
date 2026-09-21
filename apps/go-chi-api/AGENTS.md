@@ -5,12 +5,12 @@ dan tetap berlaku.
 
 ## Baca dulu
 
-| File                   | Kapan                                          |
-| ---------------------- | ---------------------------------------------- |
-| `docs/ARCHITECTURE.md` | sebelum menyentuh struktur modul               |
-| `docs/DECISIONS.md`    | sebelum mengubah keputusan teknis              |
-| `docs/tasks/<n>.md`    | sebelum mengerjakan task tersebut              |
-| `docs/openapi/`        | sebelum menambah atau mengubah endpoint        |
+| File                   | Kapan                                   |
+| ---------------------- | --------------------------------------- |
+| `docs/ARCHITECTURE.md` | sebelum menyentuh struktur modul        |
+| `docs/DECISIONS.md`    | sebelum mengubah keputusan teknis       |
+| `docs/tasks/<n>.md`    | sebelum mengerjakan task tersebut       |
+| `docs/openapi/`        | sebelum menambah atau mengubah endpoint |
 
 ## Aturan struktur
 
@@ -59,12 +59,12 @@ Semua dependency disuntikkan lewat konstruktor.
 dan dokumen boleh Indonesia.
 
 **Kode yang mudah dibaca menang atas kode yang pintar.** Kalau butuh komentar
-untuk menjelaskan *apa* yang dilakukan sebaris kode, tulis ulang barisnya.
-Komentar dipakai untuk menjelaskan *kenapa*.
+untuk menjelaskan _apa_ yang dilakukan sebaris kode, tulis ulang barisnya.
+Komentar dipakai untuk menjelaskan _kenapa_.
 
 ## SQL dan migrasi
 
-- Migrasi dibuat lewat `make db-create name=<nama>`, tidak pernah ditulis manual
+- Migrasi dibuat lewat `make migrate-create name=<nama>`, tidak pernah ditulis manual
   di direktori migrasi.
 - Migrasi yang sudah di-commit **tidak pernah disunting**. Perbaikan berarti
   migrasi baru.

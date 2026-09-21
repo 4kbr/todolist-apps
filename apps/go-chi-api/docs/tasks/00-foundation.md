@@ -22,20 +22,20 @@ Belum ada endpoint domain, belum ada tabel — itu task 01 dan seterusnya.
 
 ## File yang dibuat atau disentuh
 
-| Path | Kenapa |
-| --- | --- |
-| `Makefile` (root) | hapus target `dev-worker`, `run-worker` — warisan template, project ini tidak punya worker |
-| `apps/go-chi-api/Makefile` | seluruh target yang dijanjikan root, lihat langkah 1 |
-| `apps/go-chi-api/.env.example` | placeholder konfigurasi, tanpa kredensial asli |
-| `apps/go-chi-api/go.mod` | ganti module path dari `apps/go-chi-api` ke path unik |
-| `apps/go-chi-api/.air.toml` | konfigurasi live reload |
-| `apps/go-chi-api/.golangci.yml` | konfigurasi linter |
-| `apps/go-chi-api/internal/platform/config/config.go` | baca env → struct, validasi saat start |
-| `apps/go-chi-api/internal/platform/logger/logger.go` | `slog` JSON handler |
-| `apps/go-chi-api/internal/platform/clock/clock.go` | interface `Clock` + `System` + `Fixed` |
-| `apps/go-chi-api/internal/platform/id/id.go` | pembungkus UUIDv7 |
-| `apps/go-chi-api/internal/platform/postgres/pool.go` | `pgxpool` dengan konfigurasi sehat + `Ping` |
-| `apps/go-chi-api/cmd/api/main.go` | wiring, router `chi`, `/healthz`, graceful shutdown |
+| Path                                                 | Kenapa                                                                                     |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `Makefile` (root)                                    | hapus target `dev-worker`, `run-worker` — warisan template, project ini tidak punya worker |
+| `apps/go-chi-api/Makefile`                           | seluruh target yang dijanjikan root, lihat langkah 1                                       |
+| `apps/go-chi-api/.env.example`                       | placeholder konfigurasi, tanpa kredensial asli                                             |
+| `apps/go-chi-api/go.mod`                             | ganti module path dari `apps/go-chi-api` ke path unik                                      |
+| `apps/go-chi-api/.air.toml`                          | konfigurasi live reload                                                                    |
+| `apps/go-chi-api/.golangci.yml`                      | konfigurasi linter                                                                         |
+| `apps/go-chi-api/internal/platform/config/config.go` | baca env → struct, validasi saat start                                                     |
+| `apps/go-chi-api/internal/platform/logger/logger.go` | `slog` JSON handler                                                                        |
+| `apps/go-chi-api/internal/platform/clock/clock.go`   | interface `Clock` + `System` + `Fixed`                                                     |
+| `apps/go-chi-api/internal/platform/id/id.go`         | pembungkus UUIDv7                                                                          |
+| `apps/go-chi-api/internal/platform/postgres/pool.go` | `pgxpool` dengan konfigurasi sehat + `Ping`                                                |
+| `apps/go-chi-api/cmd/api/main.go`                    | wiring, router `chi`, `/healthz`, graceful shutdown                                        |
 
 ## Langkah
 
@@ -45,7 +45,7 @@ Root `Makefile` saat ini meneruskan target berikut ke `apps/go-chi-api`:
 
 ```
 dev dev-worker run run-worker build test test-integration lint \
-db-up db-down db-reset db-status db-create tools docs-serve:
+migrate-up migrate-down migrate-reset migrate-status migrate-create tools docs-serve:
 	$(MAKE) -C $(BACKEND) $@ $(if $(name),name=$(name))
 ```
 
@@ -55,7 +55,7 @@ API. Hapus `dev-worker` dan `run-worker` dari baris target itu, sehingga jadi:
 
 ```
 dev run build test test-integration lint \
-db-up db-down db-reset db-status db-create tools docs-serve:
+migrate-up migrate-down migrate-reset migrate-status migrate-create tools docs-serve:
 	$(MAKE) -C $(BACKEND) $@ $(if $(name),name=$(name))
 ```
 
@@ -89,19 +89,19 @@ test-integration:       ## unit + integration, butuh Docker (testcontainers)
 lint:
 	golangci-lint run ./...
 
-db-up:
+migrate-up:
 	goose -dir db/migrations postgres "$$DATABASE_URL" up
 
-db-down:
+migrate-down:
 	goose -dir db/migrations postgres "$$DATABASE_URL" down
 
-db-reset:
+migrate-reset:
 	goose -dir db/migrations postgres "$$DATABASE_URL" reset
 
-db-status:
+migrate-status:
 	goose -dir db/migrations postgres "$$DATABASE_URL" status
 
-db-create:
+migrate-create:
 	goose -dir db/migrations create $(name) sql
 
 sqlc:
@@ -127,7 +127,7 @@ docs-serve:             ## pratinjau OpenAPI lokal
 	redocly preview-docs docs/openapi/openapi.yaml
 ```
 
-Catatan `DATABASE_URL`: target `db-*` membaca dari environment, bukan dari
+Catatan `DATABASE_URL`: target `migrate-*` membaca dari environment, bukan dari
 file `.env` langsung — dokumentasikan di komentar Makefile bahwa developer
 wajib `export $(grep -v '^#' .env | xargs)` atau memakai `direnv`/`dotenv`
 sebelum memanggil target itu. Jangan menambah dependency baru hanya untuk
@@ -211,6 +211,7 @@ baru harus sepadan dengan masalah yang diselesaikan — di sini tidak ada
 masalah yang butuh diselesaikan.
 
 `Load()` **gagal cepat** (`return Config{}, fmt.Errorf(...)`) kalau:
+
 - `JWT_SECRET` kosong atau lebih pendek dari 32 karakter
 - `DATABASE_URL` tidak bisa di-parse (`url.Parse`, cek scheme `postgres`)
 - `ACCESS_TOKEN_TTL` / `REFRESH_TOKEN_TTL` gagal `time.ParseDuration`

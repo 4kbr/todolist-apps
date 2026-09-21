@@ -27,14 +27,14 @@ dari nol. Setelah task ini, `apps/cms` boleh mulai dikerjakan.
 
 ## File yang dibuat atau disentuh
 
-| Path | Isi |
-| --- | --- |
-| `.github/workflows/ci.yml` | job lint, test, test-integration, openapi, migration-check |
-| `apps/go-chi-api/Dockerfile` | multistage build |
-| `docker-compose.yml` (root, BARU) | demo: postgres + api |
-| `apps/go-chi-api/.dockerignore` | |
-| `README.md` | bagian "Status" diperbarui |
-| `apps/go-chi-api/docs/HANDS-OFF.md` | daftar target Makefile final |
+| Path                                | Isi                                                        |
+| ----------------------------------- | ---------------------------------------------------------- |
+| `.github/workflows/ci.yml`          | job lint, test, test-integration, openapi, migration-check |
+| `apps/go-chi-api/Dockerfile`        | multistage build                                           |
+| `docker-compose.yml` (root, BARU)   | demo: postgres + api                                       |
+| `apps/go-chi-api/.dockerignore`     |                                                            |
+| `README.md`                         | bagian "Status" diperbarui                                 |
+| `apps/go-chi-api/docs/HANDS-OFF.md` | daftar target Makefile final                               |
 
 ## Langkah
 
@@ -266,7 +266,11 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-todolist}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-todolist}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -316,6 +320,7 @@ hasil Dockerfile langkah 2 berbasis distroless **tanpa shell**, jadi
 adanya. Selesaikan salah satu dari dua cara sebelum menganggap langkah ini
 selesai — pilih satu, jangan dua-duanya, dan catat pilihannya di komentar
 compose file:
+
 1. Tambahkan `goose` sebagai binary statis ke dalam image final (build stage
    terpisah yang meng-`go install` goose, disalin ke image final di path
    `/goose`), lalu `migrate` memanggil `["/goose", "-dir", "/migrations", "postgres", "...", "up"]`
@@ -364,7 +369,7 @@ make build                  build binary ke bin/api
 make test                  unit test, cepat, tanpa Docker
 make test-integration       unit + integration, butuh Docker
 make lint                    golangci-lint
-make db-up/down/reset/status/create  migrasi goose
+make migrate-up/down/reset/status/create  migrasi goose
 make sqlc                    generate kode dari SQL
 make openapi-lint            lint kontrak
 make openapi-bundle          gabungkan spec jadi satu file
@@ -390,7 +395,7 @@ docker images todolist-api:test --format '{{.Size}}'   # cek ukuran, harus puluh
 ```
 
 ```bash
-cd /home/zam/Development/simple-todolist-for-lang/todolist-repo/main
+cd <root repo>
 docker compose up -d
 curl -sf localhost:8080/healthz
 curl -sf localhost:8080/readyz

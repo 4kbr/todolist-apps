@@ -1,9 +1,9 @@
 # Makefile root. Target aplikasi diteruskan ke apps/go-chi-api supaya tidak perlu
 # cd ke sana; `cd apps/go-chi-api && make dev` tetap bekerja sama persis.
 #
-# Target container berprefix dockerdev- supaya tidak tertukar dengan db-*.
+# Target container berprefix dockerdev- supaya tidak tertukar dengan migrate-*.
 # Keduanya mengurus hal berbeda: dockerdev-up menyalakan container,
-# db-up menjalankan migrasi di dalamnya.
+# migrate-up menjalankan migrasi di dalamnya.
 
 
 BACKEND := apps/go-chi-api
@@ -49,7 +49,7 @@ setup:
 	$(MAKE) dockerdev-up
 	@until $(COMPOSE) exec -T postgres pg_isready -q; do sleep 1; done
 	@# Sampai task 01 mengisi migrations/, goose wajar melaporkan tidak ada file.
-	@$(MAKE) db-up || echo "  (belum ada migrasi - itu task 01)"
+	@$(MAKE) migrate-up || echo "  (belum ada migrasi - itu task 01)"
 	@echo
 	@echo "Siap. Jalankan: make dev"
 
