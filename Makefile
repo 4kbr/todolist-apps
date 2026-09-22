@@ -18,6 +18,10 @@ dockerdev-up:
 dockerdev-down:
 	$(COMPOSE) down
 
+.PHONY: dockerdev-reset
+dockerdev-reset:
+	$(COMPOSE) down -v
+
 .PHONY: dockerdev-logs
 dockerdev-logs:
 	$(COMPOSE) logs -f
