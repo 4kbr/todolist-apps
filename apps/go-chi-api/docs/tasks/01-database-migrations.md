@@ -2,7 +2,7 @@
 
 **Phase:** 1 — Fondasi
 **Bergantung pada:** Task 00 — Foundation
-**Status:** belum dikerjakan
+**Status:** sudah dikerjakan, belum direview agent
 
 ## Tujuan
 
@@ -259,13 +259,13 @@ di-generate. Query identity ditulis task 05, query task ditulis task 07.
 
 ## Kriteria selesai
 
-- [ ] `make migrate-up` sukses dari database kosong, keempat tabel muncul di
+- [x] `make migrate-up` sukses dari database kosong, keempat tabel muncul di
       `\dt` psql
-- [ ] `make migrate-status` menunjukkan keempat migrasi berstatus applied
-- [ ] `make migrate-down` empat kali (atau `make migrate-reset`) mengembalikan database
+- [x] `make migrate-status` menunjukkan keempat migrasi berstatus applied
+- [x] `make migrate-down` empat kali (atau `make migrate-reset`) mengembalikan database
       ke kosong tanpa error — termasuk `DROP EXTENSION`
-- [ ] `psql -c '\d todos'` menunjukkan CHECK constraint pada kolom `status`
-- [ ] `psql -c '\di'` menunjukkan `sessions_user_id_idx`,
+- [x] `psql -c '\d todos'` menunjukkan CHECK constraint pada kolom `status`
+- [x] `psql -c '\di'` menunjukkan `sessions_user_id_idx`,
       `todos_user_status_due_idx`, `todos_list_created_id_idx`, dan unique
       index `lists_user_id_name_key` (nama otomatis dari `UNIQUE(user_id, name)`)
 - [ ] `make sqlc` jalan tanpa error walau menghasilkan output kosong
@@ -291,3 +291,20 @@ di-generate. Query identity ditulis task 05, query task ditulis task 07.
 - Index `(list_id, created_at DESC, id DESC)` hanya berguna kalau query task
   07 benar-benar `ORDER BY created_at DESC, id DESC` — kalau urutan `ORDER
 BY` berubah nanti, index ini harus ikut berubah, jangan dibiarkan basi.
+
+## Catatan saat pengerjaan
+
+- `make sqlc` gagal saat dijalankan, lognya:
+
+  ```bash
+  $ make sqlc
+  Menjalankan sqlc generate
+  sqlc generate
+  # package postgres
+  error parsing queries: no queries contained in paths /.../apps/go-chi-api/internal/modules/identity/internal/adapter/postgres/queries
+  # package postgres
+  error parsing queries: no queries contained in paths /.../apps/go-chi-api/internal/modules/task/internal/adapter/postgres/queries
+  make: *** [Makefile:74: sqlc] Error 1
+  ```
+
+- nama migrations file bukan 00001, 0002, 0003, dll tapi sesuai goose timestamp (`20240606123456_create_users.sql` dst) — urutan di tabel atas hanya ilustrasi
