@@ -4,3 +4,9 @@ temp/
 
 # konfigurasi container lokal - lihat .env.docker.example
 .env.docker
+
+# editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,13 @@
+# khusus apps/go-chi-api
+
+# environment - hanya .env.example yang di-commit
+.env*
+!.env.example
+
+# binary hasil build dan direktori kerja air
+bin/
+tmp/
+
+# coverage
+*.out
+coverage.html
