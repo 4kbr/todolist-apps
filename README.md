@@ -39,8 +39,9 @@ lengkapnya ada di
 
 ## Status
 
-Perencanaan selesai. Arsitektur, skema, dan sepuluh task sudah tertulis.
-Kode belum ada — mulai dari task `00-foundation.md`.
+Task 00 selesai. Migrasi task 01 sudah ditulis dan menunggu review; task 02
+belum digabung. Lihat status terbaru di
+[`apps/go-chi-api/docs/HANDS-OFF.md`](apps/go-chi-api/docs/HANDS-OFF.md).
 
 Setiap fungsi yang belum diimplementasikan `panic` dengan pesan yang menunjuk ke
 file task yang menjelaskannya.

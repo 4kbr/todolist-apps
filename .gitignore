@@ -10,3 +10,10 @@ temp/
 .idea/
 .vscode/
 *.swp
+
+# agent settings
+.claude/settings.local.json
+.claude/agent-memory-local/
+
+.agents/settings.local.json
+.agents/agent-memory-local/

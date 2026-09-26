@@ -35,10 +35,10 @@ dockerdev-psql:
 	$(COMPOSE) exec postgres psql -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-todolist_dev}
 
 ## Diteruskan ke backend -----------------------------------------------------
-.PHONY: dev run build test test-integration lint \
+.PHONY: dev run build test test-integration lint sqlc tools docs-serve \
         migrate-up migrate-down migrate-reset migrate-status migrate-create \
 				openapi-lint openapi-bundle openapi-bundle-check
-dev run build test test-integration lint \
+dev run build test test-integration lint sqlc tools docs-serve \
 migrate-up migrate-down migrate-reset migrate-status migrate-create \
 openapi-lint openapi-bundle openapi-bundle-check:
 	$(MAKE) -C $(BACKEND) $@ $(if $(name),name=$(name))
@@ -52,13 +52,12 @@ setup:
 	@echo "Menunggu postgres siap..."
 	$(MAKE) dockerdev-up
 	@until $(COMPOSE) exec -T postgres pg_isready -q; do sleep 1; done
-	@# Sampai task 01 mengisi migrations/, goose wajar melaporkan tidak ada file.
-	@$(MAKE) migrate-up || echo "  (belum ada migrasi - itu task 01)"
+	@$(MAKE) migrate-up
 	@echo
 	@echo "Siap. Jalankan: make dev"
 
 
-# Menjalankan backend dari roo
+# Menjalankan backend dari root
 .PHONY: backend
 backend:
 	$(MAKE) -C $(BACKEND) dev

@@ -54,7 +54,7 @@ migrate-up:				## menjalankan migrasi ke versi terbaru
 	goose -dir db/migrations postgres "$${DATABASE_URL}" up
 
 migrate-down:				## membatalkan migrasi terakhir
-	@echo "Menjalankan migrasi ke versi terbaru"
+	@echo "Membatalkan migrasi terakhir"
 	goose -dir db/migrations postgres "$${DATABASE_URL}" down
 
 migrate-reset:			## membatalkan semua migrasi

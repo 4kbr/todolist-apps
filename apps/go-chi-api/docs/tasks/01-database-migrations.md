@@ -108,9 +108,9 @@ DROP TABLE sessions;
 `refresh_token_hash` bertipe `bytea`, bukan `text` — yang disimpan adalah
 SHA-256 mentah (32 byte biner) dari refresh token (ADR-005), bukan hex atau
 base64-nya. Encoding jadi teks hanya buang tempat dan CPU tanpa manfaat kalau
-kolomnya tidak pernah dibaca manusia langsung. `UNIQUE` di kolom ini juga
-yang menegakkan "satu refresh token cuma valid sekali" di level database,
-bukan cuma di logika aplikasi.
+kolomnya tidak pernah dibaca manusia langsung. `UNIQUE` mencegah hash token
+yang sama tersimpan di dua baris. Sekali pakai ditegakkan oleh rotasi token
+dan `revoked_at` di aplikasi, bukan oleh constraint ini.
 
 ### 4. `00003_create_lists.sql`
 
@@ -233,12 +233,11 @@ Kalau ada paket `db` global yang dipakai bersama, modul `task` bisa
 memanggil query `users` tanpa `go build` pernah komplain — itu justru pintu
 belakang yang meniadakan gunanya `internal/` bertingkat.
 
-Nullable override: kolom nullable (`revoked_at`, `notes`, `due_at`,
-`completed_at`, `user_agent`, `ip`) dipetakan ke pointer Go (`*time.Time`,
-`*string`), bukan `pgtype.Timestamptz`/`pgtype.Text`. Konsisten pilih pointer
-di seluruh project supaya tidak ada dua gaya representasi nullable yang
-tercampur — pointer lebih akrab untuk siapa pun yang baru belajar Go
-dibanding tipe `pgtype.*` yang wajib `.Valid` dicek manual tiap pemakaian.
+Override nullable pada konfigurasi ini hanya berlaku untuk kolom
+`timestamptz` yang nullable (`revoked_at`, `due_at`, `completed_at`), yang
+dipetakan ke `*time.Time`. Kolom nullable bertipe `text` dan `inet` belum
+punya override; tipe Go hasilnya mengikuti default sqlc dan perlu diperiksa
+setelah query task 05 dan task 07 ditulis.
 
 ### 8. Direktori query kosong
 
@@ -252,10 +251,10 @@ touch internal/modules/identity/internal/adapter/postgres/queries/.gitkeep
 touch internal/modules/task/internal/adapter/postgres/queries/.gitkeep
 ```
 
-Belum ada file `.sql` query apa pun di sini. `sqlc generate` pada tahap ini
-sah menghasilkan output kosong (atau tidak menghasilkan file Go sama sekali
-selain package doc) — itu bukan kegagalan, karena belum ada query untuk
-di-generate. Query identity ditulis task 05, query task ditulis task 07.
+Belum ada file `.sql` query apa pun di sini. Pada sqlc v1.31.1, `make sqlc`
+gagal dengan `no queries contained in paths` selama direktori query masih
+kosong. Jalankan ulang setelah task 05 dan task 07 mengisi query masing-masing;
+jangan tambah query placeholder hanya untuk membuat perintah ini lulus.
 
 ## Kriteria selesai
 
@@ -268,7 +267,7 @@ di-generate. Query identity ditulis task 05, query task ditulis task 07.
 - [x] `psql -c '\di'` menunjukkan `sessions_user_id_idx`,
       `todos_user_status_due_idx`, `todos_list_created_id_idx`, dan unique
       index `lists_user_id_name_key` (nama otomatis dari `UNIQUE(user_id, name)`)
-- [ ] `make sqlc` jalan tanpa error walau menghasilkan output kosong
+- [ ] `make sqlc` jalan tanpa error setelah task 05 dan task 07 menambah query
 
 ## Jebakan
 

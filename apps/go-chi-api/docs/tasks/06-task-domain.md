@@ -30,18 +30,18 @@ HTTP di task ini — itu task 07. Kalau kompilasi butuh `net/http`, `pgx`, atau
 
 ## File yang dibuat atau disentuh
 
-| Path | Isi |
-| --- | --- |
-| `internal/modules/task/internal/domain/list.go` | entity `List`, method `Rename` |
-| `internal/modules/task/internal/domain/todo.go` | entity `Todo`, method `Complete`, `Reopen`, `MoveTo` |
-| `internal/modules/task/internal/domain/status.go` | tipe `Status`, `Priority` |
-| `internal/modules/task/internal/domain/errors.go` | error sentinel |
-| `internal/modules/task/internal/domain/repository.go` | interface `ListRepository`, `TodoRepository`, struct filter |
-| `internal/modules/task/internal/domain/*_test.go` | unit test domain |
-| `internal/modules/task/internal/application/create_list.go` dst | satu file per usecase (atau dikelompokkan per agregat, lihat langkah 4) |
-| `internal/modules/task/internal/application/dto.go` | input/output usecase |
-| `internal/modules/task/internal/application/*_test.go` | unit test usecase dengan fake repository |
-| `internal/modules/task/internal/application/fake_repository_test.go` | fake `ListRepository`/`TodoRepository` |
+| Path                                                                 | Isi                                                                     |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `internal/modules/task/internal/domain/list.go`                      | entity `List`, method `Rename`                                          |
+| `internal/modules/task/internal/domain/todo.go`                      | entity `Todo`, method `Complete`, `Reopen`, `MoveTo`                    |
+| `internal/modules/task/internal/domain/status.go`                    | tipe `Status`, `Priority`                                               |
+| `internal/modules/task/internal/domain/errors.go`                    | error sentinel                                                          |
+| `internal/modules/task/internal/domain/repository.go`                | interface `ListRepository`, `TodoRepository`, struct filter             |
+| `internal/modules/task/internal/domain/*_test.go`                    | unit test domain                                                        |
+| `internal/modules/task/internal/application/create_list.go` dst      | satu file per usecase (atau dikelompokkan per agregat, lihat langkah 4) |
+| `internal/modules/task/internal/application/dto.go`                  | input/output usecase                                                    |
+| `internal/modules/task/internal/application/*_test.go`               | unit test usecase dengan fake repository                                |
+| `internal/modules/task/internal/application/fake_repository_test.go` | fake `ListRepository`/`TodoRepository`                                  |
 
 ## Langkah
 
@@ -88,8 +88,7 @@ func (p Priority) Valid() bool {
 }
 ```
 
-Nilai string harus sama persis dengan nilai CHECK constraint di migrasi task
-05 — cek migrasinya sebelum menulis konstanta ini, jangan menebak.
+Nilai string harus sama persis dengan nilai CHECK constraint di migrasi task 01 — cek migrasinya sebelum menulis konstanta ini, jangan menebak.
 
 ### 2. `domain/errors.go`
 

@@ -27,23 +27,23 @@ lapisan SQL, dan diuji lewat integration test yang menembus database asli.
 
 ## File yang dibuat atau disentuh
 
-| Path | Isi |
-| --- | --- |
-| `internal/modules/task/internal/adapter/postgres/queries/lists.sql` | query `ListRepository` |
-| `internal/modules/task/internal/adapter/postgres/queries/todos.sql` | query `TodoRepository` |
-| `internal/modules/task/internal/adapter/postgres/*.go` (hasil sqlc) | digenerate, jangan ditulis manual |
-| `internal/modules/task/internal/adapter/postgres/list_repository.go` | implementasi `domain.ListRepository` |
-| `internal/modules/task/internal/adapter/postgres/todo_repository.go` | implementasi `domain.TodoRepository` |
-| `internal/modules/task/internal/adapter/postgres/errors.go` | pemetaan `*pgconn.PgError` → error domain |
-| `internal/modules/task/internal/adapter/http/lists_handler.go` | handler endpoint list |
-| `internal/modules/task/internal/adapter/http/todos_handler.go` | handler endpoint todo |
-| `internal/modules/task/internal/adapter/http/dto.go` | request/response struct |
-| `internal/modules/task/internal/adapter/http/routes.go` | daftar route Chi |
-| `internal/modules/task/module.go` | `Module`, `New(Deps)`, `Routes()` |
-| `sqlc.yaml` | tambah entry modul `task` |
-| `cmd/api/main.go` | wiring modul `task` di belakang auth |
-| `internal/modules/task/internal/adapter/postgres/*_integration_test.go` | integration test repository |
-| `internal/modules/task/internal/adapter/http/*_integration_test.go` | integration test HTTP end-to-end |
+| Path                                                                    | Isi                                       |
+| ----------------------------------------------------------------------- | ----------------------------------------- |
+| `internal/modules/task/internal/adapter/postgres/queries/lists.sql`     | query `ListRepository`                    |
+| `internal/modules/task/internal/adapter/postgres/queries/todos.sql`     | query `TodoRepository`                    |
+| `internal/modules/task/internal/adapter/postgres/*.go` (hasil sqlc)     | digenerate, jangan ditulis manual         |
+| `internal/modules/task/internal/adapter/postgres/list_repository.go`    | implementasi `domain.ListRepository`      |
+| `internal/modules/task/internal/adapter/postgres/todo_repository.go`    | implementasi `domain.TodoRepository`      |
+| `internal/modules/task/internal/adapter/postgres/errors.go`             | pemetaan `*pgconn.PgError` → error domain |
+| `internal/modules/task/internal/adapter/http/lists_handler.go`          | handler endpoint list                     |
+| `internal/modules/task/internal/adapter/http/todos_handler.go`          | handler endpoint todo                     |
+| `internal/modules/task/internal/adapter/http/dto.go`                    | request/response struct                   |
+| `internal/modules/task/internal/adapter/http/routes.go`                 | daftar route Chi                          |
+| `internal/modules/task/module.go`                                       | `Module`, `New(Deps)`, `Routes()`         |
+| `sqlc.yaml`                                                             | tambah entry modul `task`                 |
+| `cmd/api/main.go`                                                       | wiring modul `task` di belakang auth      |
+| `internal/modules/task/internal/adapter/postgres/*_integration_test.go` | integration test repository               |
+| `internal/modules/task/internal/adapter/http/*_integration_test.go`     | integration test HTTP end-to-end          |
 
 ## Langkah
 
@@ -190,7 +190,7 @@ tiap pemanggil di repository membungkusnya sendiri jadi error domain yang
 tepat sesuai method mana yang dipanggil (`GetListByID` → `ErrListNotFound`,
 `GetTodoByID` → `ErrTodoNotFound`), jangan taruh keputusan itu di
 `mapPgError` yang generik. Nama constraint (`lists_user_id_name_key`) harus
-dicocokkan dengan nama sungguhan yang dihasilkan migrasi task 05 — cek nama
+dicocokkan dengan nama sungguhan yang dihasilkan migrasi task 01 — cek nama
 constraint asli sebelum menyalin kode ini mentah-mentah.
 
 ### 6. Handler HTTP
@@ -302,6 +302,7 @@ ikuti pola yang sudah dipakai modul `identity` kalau sudah ada dari task
 sebelumnya).
 
 Wajib:
+
 - **CRUD penuh lewat HTTP** untuk list dan todo: create → get → update →
   delete, masing-masing mengecek status code dan body sesuai
   `openapi.yaml`.
