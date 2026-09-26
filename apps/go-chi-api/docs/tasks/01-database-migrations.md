@@ -2,12 +2,12 @@
 
 **Phase:** 1 — Fondasi
 **Bergantung pada:** Task 00 — Foundation
-**Status:** belum dikerjakan
+**Status:** sudah dikerjakan, belum direview agent
 
 ## Tujuan
 
-Setelah task ini selesai, `make db-up` membuat seluruh skema (`users`,
-`sessions`, `lists`, `todos`) di database kosong, `make db-down` membalikkannya
+Setelah task ini selesai, `make migrate-up` membuat seluruh skema (`users`,
+`sessions`, `lists`, `todos`) di database kosong, `make migrate-down` membalikkannya
 bersih sampai kosong lagi, dan `sqlc.yaml` sudah terpasang dengan satu entry
 per modul domain (`identity`, `task`) walau belum ada satu query pun ditulis.
 Query sungguhan menyusul di task 05 (`identity`) dan task 07 (`task`).
@@ -24,25 +24,25 @@ Query sungguhan menyusul di task 05 (`identity`) dan task 07 (`task`).
 
 ## File yang dibuat atau disentuh
 
-| Path | Kenapa |
-| --- | --- |
-| `apps/go-chi-api/db/migrations/00001_create_users.sql` | tabel `users` + extension `citext` |
-| `apps/go-chi-api/db/migrations/00002_create_sessions.sql` | tabel `sessions` |
-| `apps/go-chi-api/db/migrations/00003_create_lists.sql` | tabel `lists` |
-| `apps/go-chi-api/db/migrations/00004_create_todos.sql` | tabel `todos` |
-| `apps/go-chi-api/sqlc.yaml` | konfigurasi sqlc, satu entry per modul |
+| Path                                                                                   | Kenapa                                          |
+| -------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `apps/go-chi-api/db/migrations/00001_create_users.sql`                                 | tabel `users` + extension `citext`              |
+| `apps/go-chi-api/db/migrations/00002_create_sessions.sql`                              | tabel `sessions`                                |
+| `apps/go-chi-api/db/migrations/00003_create_lists.sql`                                 | tabel `lists`                                   |
+| `apps/go-chi-api/db/migrations/00004_create_todos.sql`                                 | tabel `todos`                                   |
+| `apps/go-chi-api/sqlc.yaml`                                                            | konfigurasi sqlc, satu entry per modul          |
 | `apps/go-chi-api/internal/modules/identity/internal/adapter/postgres/queries/.gitkeep` | direktori query identity, kosong sampai task 05 |
-| `apps/go-chi-api/internal/modules/task/internal/adapter/postgres/queries/.gitkeep` | direktori query task, kosong sampai task 07 |
+| `apps/go-chi-api/internal/modules/task/internal/adapter/postgres/queries/.gitkeep`     | direktori query task, kosong sampai task 07     |
 
 ## Langkah
 
 ### 1. Buat migrasi lewat goose, jangan tulis nama file manual
 
 ```bash
-make db-create name=create_users
-make db-create name=create_sessions
-make db-create name=create_lists
-make db-create name=create_todos
+make migrate-create name=create_users
+make migrate-create name=create_sessions
+make migrate-create name=create_lists
+make migrate-create name=create_todos
 ```
 
 Ini menghasilkan nama file dengan timestamp goose (`NNNNN_create_users.sql`
@@ -259,13 +259,13 @@ di-generate. Query identity ditulis task 05, query task ditulis task 07.
 
 ## Kriteria selesai
 
-- [ ] `make db-up` sukses dari database kosong, keempat tabel muncul di
+- [x] `make migrate-up` sukses dari database kosong, keempat tabel muncul di
       `\dt` psql
-- [ ] `make db-status` menunjukkan keempat migrasi berstatus applied
-- [ ] `make db-down` empat kali (atau `make db-reset`) mengembalikan database
+- [x] `make migrate-status` menunjukkan keempat migrasi berstatus applied
+- [x] `make migrate-down` empat kali (atau `make migrate-reset`) mengembalikan database
       ke kosong tanpa error — termasuk `DROP EXTENSION`
-- [ ] `psql -c '\d todos'` menunjukkan CHECK constraint pada kolom `status`
-- [ ] `psql -c '\di'` menunjukkan `sessions_user_id_idx`,
+- [x] `psql -c '\d todos'` menunjukkan CHECK constraint pada kolom `status`
+- [x] `psql -c '\di'` menunjukkan `sessions_user_id_idx`,
       `todos_user_status_due_idx`, `todos_list_created_id_idx`, dan unique
       index `lists_user_id_name_key` (nama otomatis dari `UNIQUE(user_id, name)`)
 - [ ] `make sqlc` jalan tanpa error walau menghasilkan output kosong
@@ -274,8 +274,8 @@ di-generate. Query identity ditulis task 05, query task ditulis task 07.
 
 - Urutan migrasi penting: `sessions`, `lists`, `todos` semua punya foreign
   key ke `users`, dan `todos` juga ke `lists`. Kalau nomor urut goose
-  tertukar, `db-up` gagal dengan error foreign key ke tabel yang belum ada.
-- Jangan menyunting migrasi yang sudah pernah `db-up` lalu di-commit. Kalau
+  tertukar, `migrate-up` gagal dengan error foreign key ke tabel yang belum ada.
+- Jangan menyunting migrasi yang sudah pernah `migrate-up` lalu di-commit. Kalau
   ada salah kolom setelah commit, migrasi baru yang memperbaiki, bukan
   edit file lama (`AGENTS.md`).
 - `CREATE EXTENSION IF NOT EXISTS citext` harus ada sebelum kolom pertama
@@ -283,11 +283,28 @@ di-generate. Query identity ditulis task 05, query task ditulis task 07.
   paling atas `-- +goose Up`.
 - `+goose Down` yang melakukan `DROP EXTENSION` bisa gagal kalau ada tabel
   lain (dari migrasi yang belum di-down) masih memakai tipe dari extension
-  itu — makanya urutan down harus persis kebalikan urutan up. `make db-reset`
-  menangani ini otomatis; jangan `db-down` manual dengan urutan acak.
+  itu — makanya urutan down harus persis kebalikan urutan up. `make migrate-reset`
+  menangani ini otomatis; jangan `migrate-down` manual dengan urutan acak.
 - `sqlc.yaml` versi `"2"` punya skema field yang beda dari versi `"1"` —
   jangan campur contoh dari dokumentasi versi berbeda saat menambah field
   baru nanti.
 - Index `(list_id, created_at DESC, id DESC)` hanya berguna kalau query task
   07 benar-benar `ORDER BY created_at DESC, id DESC` — kalau urutan `ORDER
-  BY` berubah nanti, index ini harus ikut berubah, jangan dibiarkan basi.
+BY` berubah nanti, index ini harus ikut berubah, jangan dibiarkan basi.
+
+## Catatan saat pengerjaan
+
+- `make sqlc` gagal saat dijalankan, lognya:
+
+  ```bash
+  $ make sqlc
+  Menjalankan sqlc generate
+  sqlc generate
+  # package postgres
+  error parsing queries: no queries contained in paths /.../apps/go-chi-api/internal/modules/identity/internal/adapter/postgres/queries
+  # package postgres
+  error parsing queries: no queries contained in paths /.../apps/go-chi-api/internal/modules/task/internal/adapter/postgres/queries
+  make: *** [Makefile:74: sqlc] Error 1
+  ```
+
+- nama migrations file bukan 00001, 0002, 0003, dll tapi sesuai goose timestamp (`20240606123456_create_users.sql` dst) — urutan di tabel atas hanya ilustrasi

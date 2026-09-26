@@ -1,0 +1,62 @@
+version: "2" # versi skema config sqlc. Wajib "2" — beda total field-nya dari versi "1", jangan dicampur.
+
+sql: # daftar "unit generate" — tiap entry = satu sumber query + satu output Go terpisah
+  - engine: "postgresql" # dialek SQL yang dipakai buat parsing query (project ini pakai Postgres)
+    queries:
+      "internal/modules/identity/internal/adapter/postgres/queries"
+      # folder berisi file .sql query MENTAH (bukan hasil generate) untuk modul identity
+      # sqlc scan semua .sql di sini, baca komentar -- name: ... untuk tahu nama fungsi Go
+    schema:
+      "db/migrations" # sqlc baca DDL dari sini untuk tahu bentuk tabel/kolom (tipe, nullable, dst)
+      # dipakai bareng oleh kedua modul karena skema database memang satu
+    gen: # konfigurasi output kode yang di-generate
+      go:
+        package: "postgres" # nama package Go untuk kode hasil generate, mis. `package postgres`
+        out:
+          "internal/modules/identity/internal/adapter/postgres"
+          # folder tujuan file .go hasil generate ditulis
+          # sengaja di dalam internal/modules/identity/... — modul lain (task) TIDAK BISA import ini
+          # karena Go internal package rules, ini yang menegakkan ADR-008
+        sql_package: "pgx/v5" # driver Postgres yang dipakai kode hasil generate (bukan database/sql biasa)
+        emit_json_tags:
+          true # struct hasil generate dapat tag `json:"..."` otomatis di tiap field
+          # berguna kalau struct ini langsung di-marshal jadi response API
+        emit_interface:
+          true # sqlc juga generate interface Go (mis. `Querier`) dari semua query
+          # ini yang bikin repository/usecase bisa depend ke interface, gampang di-mock saat test
+        overrides: # aturan khusus: "kalau ketemu tipe kolom X, pakai tipe Go Y" (override default sqlc)
+          - db_type: "uuid"
+            go_type:
+              "github.com/google/uuid.UUID"
+              # default sqlc untuk uuid biasanya [16]byte atau pgtype.UUID — di-override
+              # supaya semua kode pakai uuid.UUID yang sama dgn internal/platform/id (task 00)
+          - db_type: "timestamptz"
+            go_type:
+              "time.Time"
+              # kolom timestamptz yang NOT NULL → time.Time biasa
+          - db_type: "timestamptz"
+            go_type: "*time.Time"
+            nullable:
+              true # khusus kolom timestamptz yang NULLABLE (mis. revoked_at, due_at, completed_at)
+              # → pointer *time.Time, bukan pgtype.Timestamptz
+              # alasannya: satu gaya representasi nullable di seluruh project, pointer lebih akrab
+              # dibanding pgtype.* yang butuh .Valid dicek manual
+
+  - engine: "postgresql" # entry KEDUA — modul task, struktur persis sama, cuma path beda
+    queries: "internal/modules/task/internal/adapter/postgres/queries"
+    schema: "db/migrations" # schema tetap sama (db/migrations yang sama, satu database)
+    gen:
+      go:
+        package: "postgres"
+        out: "internal/modules/task/internal/adapter/postgres"
+        sql_package: "pgx/v5"
+        emit_json_tags: true
+        emit_interface: true
+        overrides:
+          - db_type: "uuid"
+            go_type: "github.com/google/uuid.UUID"
+          - db_type: "timestamptz"
+            go_type: "time.Time"
+          - db_type: "timestamptz"
+            go_type: "*time.Time"
+            nullable: true

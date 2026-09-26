@@ -9,14 +9,14 @@ timpa barisnya, jangan ditumpuk.
 (dengan Postgres jalan) semua hijau, `/healthz` menjawab, graceful shutdown
 jalan.
 
-| Bagian | Keadaan |
-| --- | --- |
-| Dokumen arsitektur | selesai — `docs/ARCHITECTURE.md` |
-| Keputusan teknis | selesai — `docs/DECISIONS.md`, ADR-001 s.d. ADR-013 |
-| Aturan kode | selesai — `AGENTS.md` |
-| Daftar task | selesai — `docs/tasks/`, 10 task dalam 5 phase |
-| Kontrak OpenAPI | kosong — diisi task 03 |
-| Kode | task 00 selesai — `Makefile`, config, logger, clock, id, pool pgx, chi, `/healthz`, graceful shutdown, air, golangci-lint |
+| Bagian             | Keadaan                                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Dokumen arsitektur | selesai — `docs/ARCHITECTURE.md`                                                                                          |
+| Keputusan teknis   | selesai — `docs/DECISIONS.md`, ADR-001 s.d. ADR-013                                                                       |
+| Aturan kode        | selesai — `AGENTS.md`                                                                                                     |
+| Daftar task        | selesai — `docs/tasks/`, 10 task dalam 5 phase                                                                            |
+| Kontrak OpenAPI    | kosong — diisi task 03                                                                                                    |
+| Kode               | task 00 selesai — `Makefile`, config, logger, clock, id, pool pgx, chi, `/healthz`, graceful shutdown, air, golangci-lint |
 
 ## Langkah berikutnya
 
@@ -48,7 +48,7 @@ Satu task per sesi, berurutan.
   `internal/platform/config/config.go`) — pemuatan `.env` murni tanggung
   jawab Makefile, bukan kode Go.
 - Migrasi database belum ada, jadi `make setup` / `make run` (bagian connect
-  DB) butuh Postgres jalan dan `DATABASE_URL` valid. `make db-up` dkk masih
+  DB) butuh Postgres jalan dan `DATABASE_URL` valid. `make migrate-up` dkk masih
   akan melaporkan goose tidak menemukan file migrasi — itu wajar sampai
   task 01 selesai.
 
@@ -58,8 +58,8 @@ Satu task per sesi, berurutan.
 migrate-reset migrate-status migrate-create sqlc openapi-lint openapi-bundle
 openapi-bundle-check tools docs-serve` — semua sudah ada dan bisa dipanggil
 dari root lewat forwarding. Catatan: task 00 menamainya `migrate-*` (root
-Makefile forward pakai nama ini), bukan `db-*` seperti draft awal task —
-kalau nanti nemu referensi `db-up` dkk di dokumen lama, itu sudah usang.
+Makefile forward pakai nama ini), bukan `migrate-*` seperti draft awal task —
+kalau nanti nemu referensi `migrate-up` dkk di dokumen lama, itu sudah usang.
 
 ## Batasan
 

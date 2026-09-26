@@ -25,7 +25,7 @@ endpoint auth benar-benar bisa dipanggil lewat `docker compose up` + `curl`.
   persis, status code persis. Response HARUS cocok; kalau tidak cocok,
   handler yang diperbaiki, bukan spec (kecuali lewat prosedur version bump
   di task 03).
-- `apps/go-chi-api/AGENTS.md` — migrasi lewat `make db-create`, tidak boleh
+- `apps/go-chi-api/AGENTS.md` — migrasi lewat `make migrate-create`, tidak boleh
   disunting setelah commit; `make sqlc` setelah ubah query; handler cuma
   decode/validate/panggil usecase/respond.
 
@@ -68,7 +68,7 @@ Tabel `users` dan `sessions` **sudah dibuat di task 01**. Jangan membuat migrasi
 baru di sini dan jangan menyunting migrasi yang sudah ada.
 
 ```bash
-make db-status    # users dan sessions harus tercatat applied
+make migrate-status    # users dan sessions harus tercatat applied
 ```
 
 Kalau ternyata ada kolom yang kurang, itu migrasi **baru** — bukan suntingan
