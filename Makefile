@@ -49,6 +49,6 @@ setup:
 	$(MAKE) dockerdev-up
 	@until $(COMPOSE) exec -T postgres pg_isready -q; do sleep 1; done
 	@# Sampai task 01 mengisi migrations/, goose wajar melaporkan tidak ada file.
-	@$(MAKE) db-up || echo "  (belum ada migrasi - itu task 01)"
+	@$(MAKE) migrate-up || echo "  (belum ada migrasi - itu task 01)"
 	@echo
 	@echo "Siap. Jalankan: make dev"

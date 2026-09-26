@@ -9,11 +9,21 @@ timpa barisnya, jangan ditumpuk.
 (dengan Postgres jalan) semua hijau, `/healthz` menjawab, graceful shutdown
 jalan.
 
+**Task 01 (database & migrations) — file sudah dibuat, verifikasi live
+belum jalan.** 4 migrasi goose (`users`, `sessions`, `lists`, `todos`) dan
+`sqlc.yaml` (2 entry: `identity`, `task`) sudah ditulis sesuai DDL di
+`docs/tasks/01-database-migrations.md`, plus direktori `queries/` kosong
+(`.gitkeep`) di kedua modul. **Belum dijalankan `make migrate-up` /
+`make migrate-status` / `\dt` / `\di` sungguhan** — Postgres tidak tersedia
+saat pengerjaan (Docker daemon mati, tidak ada Postgres lokal di `:5432`).
+Jalankan checklist "Kriteria selesai" di `docs/tasks/01-database-migrations.md`
+segera setelah Postgres jalan, sebelum lanjut ke task 02.
+
 | Bagian | Keadaan |
 | --- | --- |
 | Dokumen arsitektur | selesai — `docs/ARCHITECTURE.md` |
 | Keputusan teknis | selesai — `docs/DECISIONS.md`, ADR-001 s.d. ADR-013 |
-| Skema database | selesai (dokumen) — `docs/DB-SCHEMA.md`, ERD + index + cascade; migrasi sungguhan masih task 01 |
+| Skema database | migrasi ditulis, belum diverifikasi live — `db/migrations/`, 4 file (users→sessions→lists→todos, urutan FK) |
 | Aturan kode | selesai — `AGENTS.md` |
 | Daftar task | selesai — `docs/tasks/`, 10 task dalam 5 phase |
 | Kontrak OpenAPI | kosong — diisi task 03 |
@@ -21,8 +31,12 @@ jalan.
 
 ## Langkah berikutnya
 
-Kerjakan [`docs/tasks/01-database-migrations.md`](tasks/01-database-migrations.md).
-Satu task per sesi, berurutan.
+1. Nyalakan Postgres (`docker compose -f docker-compose.dev.yml up -d` dari
+   root, atau Postgres lokal), lalu jalankan checklist "Kriteria selesai" di
+   [`docs/tasks/01-database-migrations.md`](tasks/01-database-migrations.md)
+   (`make migrate-up`, `make migrate-status`, `\dt`/`\d todos`/`\di`,
+   `make migrate-reset`) yang belum sempat dijalankan.
+2. Setelah itu baru lanjut task 02. Satu task per sesi, berurutan.
 
 ## Yang perlu diketahui sebelum mulai
 
@@ -48,10 +62,19 @@ Satu task per sesi, berurutan.
   sendiri tetap baca `os.Getenv` langsung tanpa library dotenv (lihat
   `internal/platform/config/config.go`) — pemuatan `.env` murni tanggung
   jawab Makefile, bukan kode Go.
-- Migrasi database belum ada, jadi `make setup` / `make run` (bagian connect
-  DB) butuh Postgres jalan dan `DATABASE_URL` valid. `make db-up` dkk masih
-  akan melaporkan goose tidak menemukan file migrasi — itu wajar sampai
-  task 01 selesai.
+- Migrasi database sudah ada di `db/migrations/` (4 file), tapi belum pernah
+  dijalankan (`make migrate-up`) — lihat "Langkah berikutnya" di atas.
+  `make setup` / `make run` (bagian connect DB) tetap butuh Postgres jalan
+  dan `DATABASE_URL` valid.
+- `sqlc generate` (`make sqlc`) **gagal** selama `internal/modules/identity/
+  internal/adapter/postgres/queries/` dan `.../task/.../queries/` masih
+  benar-benar kosong (cuma `.gitkeep`) — `sqlc` v1.31.1 (versi yang dipasang
+  `make tools`) melempar error `no queries contained in paths`, bukan sukses
+  dengan output kosong seperti diasumsikan draft `docs/tasks/
+  01-database-migrations.md` langkah 8. Ini bukan bug di kode kita, cuma
+  behavior sqlc versi ini — akan hilang sendiri begitu task 05 (identity)
+  dan task 07 (task) mengisi `queries/*.sql`. Jangan tambah query
+  placeholder di sini cuma buat bikin `make sqlc` lulus.
 
 ## Target Makefile
 
